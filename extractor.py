@@ -1,5 +1,6 @@
 from typing import Dict, List, Set
 import osmium
+import math
 from models import GreenSpace, GreenSpaceType, Coordinates, Optional
 
 
@@ -68,6 +69,37 @@ class GreenSpaceExtractor:
         avg_lon = sum(c.lon for c in coordinates) / len(coordinates)
         return Coordinates(lat=avg_lat, lon=avg_lon)
     
+    def _calculate_area(self, coordinates: List[Coordinates]) -> Optional[float]:
+        """Calculate area in square meters using Shoelace formula"""
+        if not coordinates or len(coordinates) < 3:
+            return None
+        
+        try:
+            # Calculate centroid for average latitude
+            avg_lat = sum(c.lat for c in coordinates) / len(coordinates)
+            
+            # Meters per degree at this latitude
+            meters_per_deg_lat = 111320  # constant
+            meters_per_deg_lon = 111320 * math.cos(math.radians(avg_lat))
+            
+            # Convert to local coordinates in meters
+            local_coords = [
+                (c.lon * meters_per_deg_lon, c.lat * meters_per_deg_lat) 
+                for c in coordinates
+            ]
+            
+            # Shoelace formula
+            area = 0.0
+            n = len(local_coords)
+            for i in range(n):
+                j = (i + 1) % n
+                area += local_coords[i][0] * local_coords[j][1]
+                area -= local_coords[j][0] * local_coords[i][1]
+            
+            return abs(area) / 2.0
+        except Exception as e:
+            return None
+    
     def _create_green_space_from_way(self, way: osmium, include_geometry: bool = True) -> Optional[GreenSpace]:
         """Create a GreenSpace object from an OSM way"""
         if not way.tags:
@@ -94,6 +126,9 @@ class GreenSpaceExtractor:
         # Calculate centroid
         centroid = self._calculate_centroid(coordinates) if coordinates else None
         
+        # Calculate area from geometry
+        calculated_area = self._calculate_area(coordinates) if coordinates else None
+        
         # Create GreenSpace object
         green_space = GreenSpace(
             osm_id=way.id,
@@ -106,15 +141,16 @@ class GreenSpaceExtractor:
             timestamp=str(way.timestamp) if way.timestamp else "",
             node_count=len(way.nodes),
             node_ids=[node.ref for node in way.nodes],
-            centroid=centroid
+            centroid=centroid,
+            area_sq_m=calculated_area  # Use calculated area
         )
         
         # Store coordinates in green_space for visualization
         if coordinates:
             green_space.coordinates = coordinates
         
-        # Try to extract area if available
-        if 'area' in tags_dict:
+        # Override with OSM area tag if available and calculated area is None
+        if not calculated_area and 'area' in tags_dict:
             try:
                 green_space.area_sq_m = float(tags_dict['area'])
             except (ValueError, TypeError):

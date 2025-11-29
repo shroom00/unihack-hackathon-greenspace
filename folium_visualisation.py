@@ -60,6 +60,8 @@ def create_green_space_map(green_spaces: List[GreenSpace], pbf_file: str = None)
     # Statistics
     spaces_with_geometry = 0
     spaces_without_geometry = 0
+    total_area_sq_m = 0
+    spaces_with_area = 0
     
     # Create feature groups for better organization
     polygon_group = folium.FeatureGroup(name='Green Space Areas')
@@ -73,8 +75,16 @@ def create_green_space_map(green_spaces: List[GreenSpace], pbf_file: str = None)
         # Get colors for this type
         colors = type_colors.get(space.space_type.value, {'fill': '#808080', 'border': '#404040'})
         
-        # Create popup content
-        area_text = f"<br>Area: {space.area_sq_m:.0f} m²" if space.area_sq_m else ""
+        # Create popup content with area info
+        if space.area_sq_m:
+            area_text = f"<br><b>Area:</b> {space.area_sq_m:,.0f} m²"
+            # Also show in hectares if large enough
+            if space.area_sq_m >= 10000:  # 1 hectare = 10,000 m²
+                area_hectares = space.area_sq_m / 10000
+                area_text += f" ({area_hectares:.2f} ha)"
+        else:
+            area_text = "<br><b>Area:</b> Not calculated"
+        
         geometry_text = "<br>✓ Geometry available" if space.has_geometry else "<br>✗ No geometry"
         popup_html = f"""
         <div style="min-width: 250px">
@@ -108,6 +118,11 @@ def create_green_space_map(green_spaces: List[GreenSpace], pbf_file: str = None)
             ).add_to(polygon_group)
             
             spaces_with_geometry += 1
+            
+            # Track area statistics
+            if space.area_sq_m:
+                total_area_sq_m += space.area_sq_m
+                spaces_with_area += 1
         else:
             # Fallback to marker if no geometry
             folium.Marker(
@@ -126,23 +141,33 @@ def create_green_space_map(green_spaces: List[GreenSpace], pbf_file: str = None)
     # Add layer control AFTER adding feature groups
     folium.LayerControl(position='topright').add_to(m)
     
-    # Add legend
+    # Calculate total area in different units
+    total_area_hectares = total_area_sq_m / 10000  # 1 hectare = 10,000 m²
+    total_area_sq_km = total_area_sq_m / 1_000_000  # 1 km² = 1,000,000 m²
+    
+    # Add legend with statistics
     legend_html = f'''
     <div style="position: fixed; 
-                top: 10px; left: 50px; width: 200px; height: auto; 
+                top: 10px; left: 50px; width: 220px; height: auto; 
                 background-color: white; border:2px solid grey; z-index:9999; 
                 font-size:12px; padding: 10px; border-radius: 5px;">
     <h4 style="margin-top:0;">🌳 Green Spaces</h4>
     '''
     
     for space_type, colors in type_colors.items():
-        legend_html += f'<p><span style="color:{colors["fill"]}; font-size: 20px;">■</span> {space_type.replace("_", " ").title()}</p>'
+        legend_html += f'<p style="margin: 4px 0;"><span style="color:{colors["fill"]}; font-size: 20px;">■</span> {space_type.replace("_", " ").title()}</p>'
     
     legend_html += f'''
     <hr style="margin: 8px 0;">
-    <p><strong>Total:</strong> {len(green_spaces)} spaces</p>
-    <p><strong>With geometry:</strong> {spaces_with_geometry}</p>
-    <p><strong>Markers only:</strong> {spaces_without_geometry}</p>
+    <p style="margin: 4px 0;"><strong>Total Spaces:</strong> {len(green_spaces)}</p>
+    <p style="margin: 4px 0;"><strong>With geometry:</strong> {spaces_with_geometry}</p>
+    <p style="margin: 4px 0;"><strong>Markers only:</strong> {spaces_without_geometry}</p>
+    <hr style="margin: 8px 0;">
+    <p style="margin: 4px 0;"><strong>Total Area:</strong></p>
+    <p style="margin: 4px 0; padding-left: 10px;">{total_area_sq_m:,.0f} m²</p>
+    <p style="margin: 4px 0; padding-left: 10px;">{total_area_hectares:,.2f} ha</p>
+    <p style="margin: 4px 0; padding-left: 10px;">{total_area_sq_km:.2f} km²</p>
+    <p style="margin: 4px 0; font-size: 10px; color: #666;">({spaces_with_area} spaces have area data)</p>
     </div>
     '''
     
@@ -156,6 +181,11 @@ def create_green_space_map(green_spaces: List[GreenSpace], pbf_file: str = None)
     print(f"   Total green spaces: {len(green_spaces)}")
     print(f"   With polygon geometry: {spaces_with_geometry}")
     print(f"   Marker fallback: {spaces_without_geometry}")
+    print(f"\n🌿 Total Green Space Area:")
+    print(f"   {total_area_sq_m:,.0f} m²")
+    print(f"   {total_area_hectares:,.2f} hectares")
+    print(f"   {total_area_sq_km:.2f} km²")
+    print(f"   ({spaces_with_area} spaces have area data)")
     
     return filename
 
