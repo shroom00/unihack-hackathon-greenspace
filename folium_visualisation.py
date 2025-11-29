@@ -20,39 +20,39 @@ def create_green_space_map(green_spaces: List[GreenSpace], pbf_file: str = None)
         avg_lon = sum(s.centroid.lon for s in valid_centroids) / len(valid_centroids)
         center_lat, center_lon = avg_lat, avg_lon
     
-    # Create map
+    # Create map with standard OpenStreetMap tiles
     m = folium.Map(
         location=[center_lat, center_lon],
-        zoom_start=12,
-        tiles='OpenStreetMap'
+        zoom_start=13,
+        tiles='OpenStreetMap',
+        control_scale=True
     )
     
-    # Add different tile layers WITH ATTRIBUTIONS
+    # Add alternative tile layers
     folium.TileLayer(
-        'Stamen Terrain',
-        attr='Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
+        tiles='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        name='OpenStreetMap',
+        overlay=False,
+        control=True
     ).add_to(m)
     
     folium.TileLayer(
-        'CartoDB positron',
-        attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        tiles='https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+        attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        name='CartoDB Positron',
+        overlay=False,
+        control=True
     ).add_to(m)
     
-    folium.TileLayer(
-        'CartoDB dark_matter',
-        attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-    ).add_to(m)
-    
-    folium.LayerControl().add_to(m)
-    
-    # Color mapping for fills and borders
+    # Color mapping for fills and borders - MORE VIBRANT COLORS
     type_colors = {
-        'park': {'fill': '#90EE90', 'border': '#228B22'},           # Light green / Forest green
+        'park': {'fill': '#32CD32', 'border': '#228B22'},           # Lime green / Forest green
         'forest': {'fill': '#228B22', 'border': '#006400'},         # Forest green / Dark green
-        'garden': {'fill': '#98FB98', 'border': '#32CD32'},         # Pale green / Lime green
+        'garden': {'fill': '#7CFC00', 'border': '#32CD32'},         # Lawn green / Lime green
         'nature_reserve': {'fill': '#FFD700', 'border': '#FF8C00'}, # Gold / Dark orange
         'meadow': {'fill': '#ADFF2F', 'border': '#9ACD32'},         # Green yellow / Yellow green
-        'grassland': {'fill': '#7CFC00', 'border': '#32CD32'},      # Lawn green / Lime green
+        'grassland': {'fill': '#90EE90', 'border': '#32CD32'},      # Light green / Lime green
         'wood': {'fill': '#2E8B57', 'border': '#006400'},           # Sea green / Dark green
         'recreation_ground': {'fill': '#87CEEB', 'border': '#4682B4'} # Sky blue / Steel blue
     }
@@ -94,7 +94,7 @@ def create_green_space_map(green_spaces: List[GreenSpace], pbf_file: str = None)
             # Convert coordinates to list of [lat, lon] pairs
             locations = [[coord.lat, coord.lon] for coord in space.coordinates]
             
-            # Create polygon
+            # Create polygon with more visible styling
             folium.Polygon(
                 locations=locations,
                 popup=folium.Popup(popup_html, max_width=300),
@@ -102,9 +102,9 @@ def create_green_space_map(green_spaces: List[GreenSpace], pbf_file: str = None)
                 color=colors['border'],
                 fill=True,
                 fillColor=colors['fill'],
-                fillOpacity=0.5,
-                weight=2,
-                opacity=0.8
+                fillOpacity=0.6,
+                weight=3,
+                opacity=1.0
             ).add_to(polygon_group)
             
             spaces_with_geometry += 1
@@ -122,6 +122,9 @@ def create_green_space_map(green_spaces: List[GreenSpace], pbf_file: str = None)
     # Add feature groups to map
     polygon_group.add_to(m)
     marker_group.add_to(m)
+    
+    # Add layer control AFTER adding feature groups
+    folium.LayerControl(position='topright').add_to(m)
     
     # Add legend
     legend_html = f'''
