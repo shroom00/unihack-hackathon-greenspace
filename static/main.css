@@ -1,0 +1,172 @@
+/* 1. Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+body {
+    /* Re-adding the map texture.*/
+    background-color: #f0f0f0;
+    background-image: url('bg.png');
+    background-size: cover; /* Ensures it covers the whole screen */
+    background-attachment: fixed;
+    color: #1a1a1a;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    text-align: left; /* Force alignment to left to fix the centered title */
+}
+
+/* 2. Header Styles */
+header {
+    background-color: #378b2e;
+    color: white;
+    padding: 15px 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.logo {
+    font-weight: 800;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+}
+
+.header-center-icon {
+    font-size: 1.5rem;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+/* 3. Main Layout */
+main {
+    flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    width: 100%;
+}
+
+/* Flex container for the two main columns */
+.content-wrapper {
+    display: flex;
+    flex-direction: row; /* Ensure they are side by side */
+    gap: 60px; /* Increased gap for better spacing */
+    justify-content: center;
+    align-items: flex-start; /* Prevents columns from stretching weirdly */
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    flex: 1;
+    width: 50%; /* Explicitly tell browser to split width */
+}
+
+/* 4. Content Styles */
+.hero-title {
+    text-align: left; /* Strict enforcement */
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 4rem; /* Made slightly larger to match wireframe */
+    line-height: 1;
+    color: #000;
+    font-weight: 700;
+    text-align: left;
+}
+
+.card {
+    background-color: rgba(225, 225, 225, 0.7); /* Slightly more transparent */
+    padding: 35px;
+    border-radius: 2px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+h2 {
+    font-size: 1.6rem;
+    margin-bottom: 15px;
+    color: #000;
+    font-weight: 700;
+}
+
+p {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+/* 5. Staggering Logic (The fix for the layout) */
+
+/* The right column needs to start lower down to match the design */
+.column-right {
+    margin-top: 150px; /* This pushes the RIGHT column down */
+}
+
+.team-box {
+    min-height: 300px;
+}
+
+.gif-placeholder {
+    background-image: url('map.gif');
+    background-color: rgba(220, 220, 220, 0.9);
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.8rem;
+    color: #333;
+    border: 1px dashed #999;
+}
+
+/* 6. Footer */
+footer {
+    background-color: #378b2e;
+    color: white;
+    padding: 5px 20px;
+    text-align: center;
+    font-size: 0.6rem;
+    margin-top: auto;
+}
+
+/* 7. Mobile Responsive */
+@media (max-width: 768px) {
+    .content-wrapper {
+        flex-direction: column;
+    }
+    
+    .column-right {
+        margin-top: 0; /* Reset margin on mobile */
+    }
+
+    .column {
+        width: 100%;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+    }
+}
