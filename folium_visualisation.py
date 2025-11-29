@@ -216,7 +216,7 @@ def main():
     from manager import GreenSpaceManager
 
     for pbf_file, name, population, total_area_km in (
-        # ("west-midlands-251128.osm.pbf", "West Midlands", 5950757, 13004),
+        ("west-midlands-251128.osm.pbf", "West Midlands", 5950757, 13004),
         ("staffordshire-251128.osm.pbf", "Staffordshire", 1177578, 2714),
     ):
         try:
