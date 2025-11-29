@@ -22,7 +22,7 @@ class GreenSpaceCache:
         cache_path = self._get_cache_path(pbf_file, format)
         return cache_path.exists()
     
-    def save_to_json(self, green_spaces: List[GreenSpace], pbf_file: str) -> None:
+    def save_to_json(self, name: str, population: int, total_area_km: float, green_spaces: List[GreenSpace], pbf_file: str) -> None:
         """Save green spaces to JSON cache"""
         cache_path = self._get_cache_path(pbf_file, "json")
         
@@ -31,7 +31,10 @@ class GreenSpaceCache:
             'metadata': {
                 'source_file': pbf_file,
                 'export_date': datetime.now().isoformat(),
-                'green_space_count': len(green_spaces)
+                'green_space_count': len(green_spaces),
+                "name": name,
+                "population": population,
+                "total_area_km": total_area_km
             },
             'green_spaces': [space.to_dict() for space in green_spaces]
         }

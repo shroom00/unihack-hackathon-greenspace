@@ -100,7 +100,7 @@ class GreenSpaceExtractor:
         except Exception as e:
             return None
     
-    def _create_green_space_from_way(self, way: osmium, include_geometry: bool = True) -> Optional[GreenSpace]:
+    def _create_green_space_from_way(self, way, include_geometry: bool = True) -> Optional[GreenSpace]:
         """Create a GreenSpace object from an OSM way"""
         if not way.tags:
             return None

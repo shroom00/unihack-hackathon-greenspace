@@ -7,7 +7,10 @@ from storage import GreenSpaceCache
 class GreenSpaceManager:
     """Main manager that handles extraction and caching automatically"""
     
-    def __init__(self, cache_dir: str = "green_space_cache", use_cache: bool = True):
+    def __init__(self, name: str, population: int, total_area_km: float, cache_dir: str = "green_space_cache", use_cache: bool = True):
+        self.name = name
+        self.population = population
+        self.total_area_km = total_area_km
         self.extractor = GreenSpaceExtractor()
         self.cache = GreenSpaceCache(cache_dir)
         self.pickle_cache = GreenSpacePickleCache(cache_dir)
@@ -37,8 +40,8 @@ class GreenSpaceManager:
         if self.use_cache:
             try:
                 # Save to both formats
-                self.pickle_cache.save_to_pickle(green_spaces, pbf_file)
-                self.cache.save_to_json(green_spaces, pbf_file)
+                self.pickle_cache.save_to_pickle(self.name, self.population, self.total_area_km, green_spaces, pbf_file)
+                self.cache.save_to_json(self.name, self.population, self.total_area_km, green_spaces, pbf_file)
             except Exception as e:
                 print(f"Warning: Caching failed: {e}")
         
