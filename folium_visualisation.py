@@ -1,4 +1,4 @@
-from html import escape
+from utils import escape
 import folium
 from typing import List
 import webbrowser
@@ -7,7 +7,9 @@ from pathlib import Path
 from models import GreenSpace
 
 
-def create_green_space_map(green_spaces: List[GreenSpace], name: str, population: int, total_area_km: int) -> str:
+def create_green_space_map(
+    green_spaces: List[GreenSpace], name: str, population: int, total_area_km: int
+) -> str:
     """
     Create a Folium map with green spaces drawn as polygons
     Returns the filename of the saved map
@@ -143,7 +145,7 @@ def create_green_space_map(green_spaces: List[GreenSpace], name: str, population
             folium.Marker(
                 location=[space.centroid.lat, space.centroid.lon],
                 popup=folium.Popup(popup_html, max_width=300),
-                tooltip=f"{space.name} ({space.space_type.value})",
+                tooltip=f"{escape(space.name)} ({space.space_type.value})",
                 icon=folium.Icon(color="gray", icon="tree", prefix="fa"),
             ).add_to(marker_group)
 
@@ -214,7 +216,7 @@ def main():
     from manager import GreenSpaceManager
 
     for pbf_file, name, population, total_area_km in (
-        ("west-midlands-251128.osm.pbf", "West Midlands", 5950757, 13004),
+        # ("west-midlands-251128.osm.pbf", "West Midlands", 5950757, 13004),
         ("staffordshire-251128.osm.pbf", "Staffordshire", 1177578, 2714),
     ):
         try:
@@ -227,7 +229,9 @@ def main():
 
             # Create map
             print("Creating interactive map...")
-            map_file = create_green_space_map(green_spaces, name, population, total_area_km)
+            map_file = create_green_space_map(
+                green_spaces, name, population, total_area_km
+            )
 
             # Open in browser
             print(f"🌐 Opening map: {map_file}")

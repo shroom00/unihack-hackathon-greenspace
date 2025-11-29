@@ -1,3 +1,4 @@
+from utils import escape
 from typing import Dict, List, Optional, Set, Any
 from dataclasses import dataclass, field
 from enum import Enum
@@ -99,13 +100,13 @@ class GreenSpace:
         return {
             'osm_id': self.osm_id,
             'osm_type': self.osm_type,
-            'name': self.name,
+            'name': escape(self.name),
             'space_type': self.space_type.value,
             'centroid': (self.centroid.lat, self.centroid.lon) if self.centroid else None,
             'coordinates': [(c.lat, c.lon) for c in self.coordinates] if self.coordinates else [],
             'area_sq_m': self.area_sq_m,
             'perimeter_m': self.perimeter_m,
-            'tags': self.tags,
+            'tags': {k: escape(v) for k, v in self.tags.items()},
             'version': self.version,
             'changeset': self.changeset,
             'timestamp': self.timestamp,
