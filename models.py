@@ -1,5 +1,5 @@
 from typing import Dict, List, Optional, Set, Any
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 
 class GreenSpaceType(Enum):
@@ -37,6 +37,9 @@ class GreenSpace:
     area_sq_m: Optional[float] = None
     perimeter_m: Optional[float] = None
     
+    # Geometry - polygon coordinates for visualization
+    coordinates: List[Coordinates] = field(default_factory=list)
+    
     # OSM-specific data
     tags: Dict[str, str] = None
     version: int = 1
@@ -52,6 +55,8 @@ class GreenSpace:
             self.tags = {}
         if self.node_ids is None:
             self.node_ids = []
+        if self.coordinates is None:
+            self.coordinates = []
     
     @property
     def has_name(self) -> bool:
@@ -76,6 +81,11 @@ class GreenSpace:
         }
         return self.space_type in recreational_types
     
+    @property
+    def has_geometry(self) -> bool:
+        """Check if this green space has polygon geometry"""
+        return len(self.coordinates) > 0
+    
     def get_tag(self, key: str, default: str = "") -> str:
         """Safely get a tag value"""
         return self.tags.get(key, default)
@@ -92,6 +102,7 @@ class GreenSpace:
             'name': self.name,
             'space_type': self.space_type.value,
             'centroid': (self.centroid.lat, self.centroid.lon) if self.centroid else None,
+            'coordinates': [(c.lat, c.lon) for c in self.coordinates] if self.coordinates else [],
             'area_sq_m': self.area_sq_m,
             'perimeter_m': self.perimeter_m,
             'tags': self.tags,
@@ -101,7 +112,8 @@ class GreenSpace:
             'node_count': self.node_count,
             'has_name': self.has_name,
             'is_natural': self.is_natural,
-            'is_recreational': self.is_recreational
+            'is_recreational': self.is_recreational,
+            'has_geometry': self.has_geometry
         }
     
     def __str__(self) -> str:
