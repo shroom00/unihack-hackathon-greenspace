@@ -11,7 +11,7 @@ Setup Instructions
    pip install shapely
    pip install osmium
 
-4. To create the interactive web page, simply run folium_visualisation.py
+4. To create the interactive web page, simply run folium_visualisation.py (Place it in the static folder)
 
 5. Customising the Input Region
    In the main() function, modify the nested tuple containing pfb_file, name, population and total_area_km_in.
