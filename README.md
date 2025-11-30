@@ -1,4 +1,18 @@
-Setup Instructions
+# GreenSpace
+
+## The Team
+
+[Mohammed Amir Khan](https://www.linkedin.com/in/mohammed-amir-khan-200758227/)
+
+[Mohammed Adnan Gul](https://www.linkedin.com/in/adnan-gul-08806a351/)
+
+[Mohammed Choudhary](https://www.linkedin.com/in/mohammed-chowdhury-432415376/)
+
+[Hamzah Abdur Rahman](https://www.linkedin.com/in/hamzah-abdur-rahman-5553ab2b8/)
+
+shroom00
+
+## Setup Instructions
 
 1. Ensure that you have the Python version 3.9-3.11 installed
 

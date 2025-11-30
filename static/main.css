@@ -30,6 +30,10 @@ header {
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
+#greenspace {
+    color: #378b2e;
+}
+
 .logo {
     font-weight: 800;
     font-size: 1.1rem;
