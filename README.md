@@ -6,7 +6,7 @@
 
 [Mohammed Adnan Gul](https://www.linkedin.com/in/adnan-gul-08806a351/)
 
-[Mohammed Choudhary](https://www.linkedin.com/in/mohammed-chowdhury-432415376/)
+[Mohammed Chowdhury](https://www.linkedin.com/in/mohammed-chowdhury-432415376/)
 
 [Hamzah Abdur Rahman](https://www.linkedin.com/in/hamzah-abdur-rahman-5553ab2b8/)
 
